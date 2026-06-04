@@ -17,7 +17,7 @@ width, height = img.size
 
 with open(OUTPUT_FILE, "w") as f:
 
-    f.write(".data\n\n") #declarando o .data
+    f.write(".data\n\n") 
 
     f.write(f"{BASE_LABEL}_width: .word {width}\n")
     f.write(f"{BASE_LABEL}_height: .word {height}\n\n")
