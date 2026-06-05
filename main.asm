@@ -1,5 +1,6 @@
 .data
 
+.include "cenarios/stage0.asm"		# Local onde está o arquivo do menu inicial
 .include "cenarios/stage1.asm" 			#local onde esta o arquivo do cenario 1
 .include "cenarios/stage2.asm" 		#local onde esta o arquivo do cenario 2
 
@@ -8,6 +9,18 @@
 .globl main
 
 main:
+
+    # =========================================
+    # STAGE 0
+    # =========================================
+    
+    la $a0, menu_principal
+    lw $a1, menu_principal_width
+    lw $a2, menu_principal_height
+    
+    jal render_cenario
+    li $a0, 5000
+    jal espera
 
     # =========================================
     # STAGE 1
