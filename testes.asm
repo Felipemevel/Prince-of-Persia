@@ -4,6 +4,7 @@
 .include "cenarios/stage0.asm"			# Local onde está o arquivo do menu inicial
 .include "cenarios/stage2.asm" 			# Local onde esta o arquivo do cenario 2
 .include "cenarios/stage1.asm" 			# Local onde esta o arquivo do cenario 1
+.include "cenarios/alunos_transparente.asm"
 
 
 .text
@@ -12,10 +13,10 @@
 main:
 
     # =========================================
-    # COMEÇO
+    # DESENHO DE RETÂNGULO
     # =========================================
 
-    jal controlesCenario
+    j controlesCenario
 
     # =========================================
     # FIM
