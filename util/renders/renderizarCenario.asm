@@ -199,7 +199,8 @@ desenhar_principe_um:
 # ============================================================
 # Descrição:
 #   Responsável pela renderização do cenário 2.
-#   Utiliza exatamente a mesma lógica do cenário 1.
+#   Utiliza exatamente a mesma lógica do cenário 1, 
+#   adicionando o inimigo autônomo.
 # ============================================================
 
 renderizarCenarioDois:
@@ -253,13 +254,40 @@ desenhar_principe_dois:
     jal renderizar_sprite
 
     # --------------------------------------------------------
-    # Atualiza posição anterior
+    # Atualiza posição anterior do Príncipe
     # --------------------------------------------------------
     lw $t0, prince_x
     sw $t0, prince_old_x
 
     lw $t1, prince_y
     sw $t1, prince_old_y
+
+    # ============================================================
+    # LÓGICA DO INIMIGO AUTÔNOMO
+    # ============================================================
+
+    # 1. Restaura apenas a área antiga do inimigo (Dirty Rectangle)
+    la $a0, cenario_2
+    lw $a1, inimigo_old_x
+    lw $a2, inimigo_old_y
+    li $a3, 39                  # Largura exata do inimigo
+    li $t0, 50                  # Altura exata do inimigo
+    jal restaurar_fundo_sprite
+
+    # 2. Chama a física autônoma (faz o Y subir ou descer)
+    jal atualizar_inimigos
+
+    # 3. Desenha o inimigo na nova posição
+    la $a0, inimigo_frame1
+    lw $a1, inimigo_x
+    lw $a2, inimigo_y
+    li $a3, 39
+    li $t0, 50
+    jal renderizar_sprite
+
+    # ============================================================
+    # FIM DA LÓGICA DO INIMIGO
+    # ============================================================
 
     # Delay do game loop
     li $a0, 15
