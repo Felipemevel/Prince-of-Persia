@@ -22,6 +22,8 @@
 .include "sprites/prince_idle_left.asm"   # Sprite do príncipe parado (esquerda)
 .include "sprites/prince_jump_right.asm"  # Sprite do príncipe pulando (direita)
 .include "sprites/prince_jump_left.asm"   # Sprite do príncipe pulando (esquerda)
+.include "sprites/prince_attack_sword_right.asm"  # Sprite do príncipe atacando (direita)
+.include "sprites/prince_attack_sword_left.asm"   # Sprite do príncipe atacando (esquerda)
 .include "sprites/inimigo1-frame1.asm"    # Sprite do inimigo
 
 # ------------------------------------------------------------
@@ -47,6 +49,10 @@ velocidade_y:        .word 0       # Velocidade vertical (neg. = sobe, pos. = de
 velocidade_x:        .word 0       # Velocidade horizontal do drift (pulo diagonal)
 no_chao:             .word 1       # 1 = no chão, 0 = no ar
 direcao:             .word 1       # 1 = direita, -1 = esquerda
+inimigo_vida:        .word 3       # 3 hits para morrer
+inimigo_vivo:        .word 1       # 1 = vivo, 0 = morto
+atacando:            .word 0       # 0 = não atacando, >0 = frames de ataque restantes
+ataque_cooldown:     .word 0       # 0 = pronto, >0 = cooldown restante
 
 # ============================================================
 # 3. INÍCIO DA ÁREA DE CÓDIGO PRINCIPAL

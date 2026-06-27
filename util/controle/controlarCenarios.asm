@@ -19,8 +19,8 @@ controlesCenario:
     beq $v0, $t0, iniciar_pulo
     li $t0, 101               # ASCII 'e' (Pulo Diagonal Direita)
     beq $v0, $t0, pulo_direita
-    li $t0, 115               # ASCII 's'
-    beq $v0, $t0, move_s
+    li $t0, 115               # ASCII 's' (Ataque)
+    beq $v0, $t0, iniciar_ataque
     li $t0, 97                # ASCII 'a'
     beq $v0, $t0, move_a
     li $t0, 100               # ASCII 'd'
@@ -69,23 +69,58 @@ pulo_direita:
     j aplicar_fisica
 
 
-move_s:
-    addu $t4, $t2, $t3           
-    move $a0, $t1
-    move $a1, $t4
-    
-    addiu $sp, $sp, -4
-    sw $t4, 0($sp)
-    jal checar_colisao
-    lw $t4, 0($sp)
-    addiu $sp, $sp, 4
+iniciar_ataque:
+    lw $t0, atacando
+    bnez $t0, aplicar_fisica
+    lw $t0, ataque_cooldown
+    bnez $t0, aplicar_fisica
+    li $t0, 5
+    sw $t0, atacando
+    li $t0, 10
+    sw $t0, ataque_cooldown
 
-    li $t5, 2
-    beq $v0, $t5, morte_personagem
-    li $t5, 1
-    beq $v0, $t5, aplicar_fisica
-    sw $t4, prince_y
-    j aplicar_fisica
+    lw $t0, cenario_atual
+    li $t1, 2
+    bne $t0, $t1, aplicar_fisica
+
+    lw $t0, direcao
+    li $t1, 1
+    beq $t0, $t1, atk_hitbox_dir
+
+    lw $t2, prince_x
+    lw $t3, prince_y
+    addiu $t4, $t3, 32
+    addiu $t5, $t2, -56
+    addiu $t6, $t2, 9
+    j check_atk_inimigo
+
+atk_hitbox_dir:
+    lw $t2, prince_x
+    lw $t3, prince_y
+    addiu $t4, $t3, 32
+    move $t5, $t2
+    addiu $t6, $t2, 65
+
+check_atk_inimigo:
+    lw $t0, inimigo_vivo
+    beqz $t0, aplicar_fisica
+    lw $t7, inimigo_x
+    addiu $t9, $t7, 39
+    blt $t6, $t7, aplicar_fisica
+    bgt $t5, $t9, aplicar_fisica
+    lw $t7, inimigo_y
+    blt $t4, $t7, aplicar_fisica
+    lw $t7, inimigo_y
+    addiu $t7, $t7, 50
+    bgt $t3, $t7, aplicar_fisica
+    lw $t0, inimigo_vida
+    addiu $t0, $t0, -1
+    sw $t0, inimigo_vida
+    bgtz $t0, aplicar_fisica
+    li $t0, 0
+    sw $t0, inimigo_vivo
+    li $t0, 1
+    sw $t0, atualizar_fundo
 
 
 move_a:
@@ -236,12 +271,27 @@ parar_drift_x:
     j depois_fisica
 
 depois_fisica:
+    lw $t0, atacando
+    beqz $t0, dec_cooldown
+    addiu $t0, $t0, -1
+    sw $t0, atacando
+    bnez $t0, dec_cooldown
+    li $t0, 1
+    sw $t0, atualizar_fundo
+dec_cooldown:
+    lw $t0, ataque_cooldown
+    beqz $t0, check_cenario
+    addiu $t0, $t0, -1
+    sw $t0, ataque_cooldown
+check_cenario:
     lw $t0, cenario_atual
     li $t1, 2
     beq $t0, $t1, verificar_inimigo
     j verifica_limites
 
 verificar_inimigo:
+    lw $t0, inimigo_vivo
+    beqz $t0, depois_inimigo
     lw $t0, prince_x
     lw $t1, inimigo_x
     addiu $t1, $t1, 38
@@ -278,6 +328,8 @@ morte_personagem:
     sw $t3, velocidade_y
     li $t3, 1
     sw $t3, no_chao
+    sw $zero, atacando
+    sw $zero, ataque_cooldown
     j vai_para_cenario_0
 
 verifica_limites:
@@ -314,6 +366,12 @@ vai_para_cenario_2:
     sw $t3, velocidade_y
     li $t3, 1
     sw $t3, no_chao
+    sw $zero, atacando
+    sw $zero, ataque_cooldown
+    li $t3, 3
+    sw $t3, inimigo_vida
+    li $t3, 1
+    sw $t3, inimigo_vivo
     j redirecionar_cenario
 
 vai_para_cenario_0:
@@ -336,6 +394,12 @@ reset_jogo:
     sw $t3, velocidade_y
     li $t3, 1
     sw $t3, no_chao
+    sw $zero, atacando
+    sw $zero, ataque_cooldown
+    li $t3, 3
+    sw $t3, inimigo_vida
+    li $t3, 1
+    sw $t3, inimigo_vivo
     j redirecionar_cenario
 
 redirecionar_cenario:

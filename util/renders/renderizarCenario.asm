@@ -149,20 +149,30 @@ renderizarCenarioUm:
 
 skip_fundo_um:
 
-    # --------------------------------------------------------
-    # Restaura apenas a área antiga do personagem
-    # --------------------------------------------------------
+    lw $t0, prince_x
+    lw $t1, prince_old_x
+    bne $t0, $t1, restaurar_um
+    lw $t0, prince_y
+    lw $t1, prince_old_y
+    bne $t0, $t1, restaurar_um
+    lw $t0, atacando
+    bnez $t0, restaurar_um
+    j desenhar_principe_um
+
+restaurar_um:
     la $a0, cenario1
 
     lw $a1, prince_old_x
     lw $a2, prince_old_y
 
-    li $a3, 50
+    li $a3, 65
     li $t0, 42
 
     jal restaurar_fundo_sprite
 
 desenhar_principe_um:
+    lw $t1, atacando
+    bgtz $t1, ataque_um
     lw $t1, no_chao
     bnez $t1, sprite_idle_um
 
@@ -191,12 +201,36 @@ idle_dir_um:
     la $a0, prince_idle_right
     li $a3, 9
     li $t0, 42
+    j pos_principe_um
+
+ataque_um:
+    lw $t2, direcao
+    li $t3, 1
+    beq $t2, $t3, atk_dir_um
+    la $a0, prince_attack_sword_left
+    li $a3, 65
+    li $t0, 32
+    lw $a1, prince_x
+    addiu $a1, $a1, -56
+    lw $a2, prince_y
+    jal renderizar_sprite
+    j depois_render_um
+atk_dir_um:
+    la $a0, prince_attack_sword_right
+    li $a3, 65
+    li $t0, 32
+    lw $a1, prince_x
+    lw $a2, prince_y
+    jal renderizar_sprite
+    j depois_render_um
 
 pos_principe_um:
     lw $a1, prince_x
     lw $a2, prince_y
 
     jal renderizar_sprite
+
+depois_render_um:
 
     # --------------------------------------------------------
     # Atualiza posição anterior
@@ -246,20 +280,30 @@ renderizarCenarioDois:
 
 skip_fundo_dois:
 
-    # --------------------------------------------------------
-    # Remove rastro do personagem
-    # --------------------------------------------------------
+    lw $t0, prince_x
+    lw $t1, prince_old_x
+    bne $t0, $t1, restaurar_dois
+    lw $t0, prince_y
+    lw $t1, prince_old_y
+    bne $t0, $t1, restaurar_dois
+    lw $t0, atacando
+    bnez $t0, restaurar_dois
+    j desenhar_principe_dois
+
+restaurar_dois:
     la $a0, cenario_2
 
     lw $a1, prince_old_x
     lw $a2, prince_old_y
 
-    li $a3, 50
+    li $a3, 65
     li $t0, 42
 
     jal restaurar_fundo_sprite
 
 desenhar_principe_dois:
+    lw $t1, atacando
+    bgtz $t1, ataque_dois
     lw $t1, no_chao
     bnez $t1, sprite_idle_dois
 
@@ -288,12 +332,36 @@ idle_dir_dois:
     la $a0, prince_idle_right
     li $a3, 9
     li $t0, 42
+    j pos_principe_dois
+
+ataque_dois:
+    lw $t2, direcao
+    li $t3, 1
+    beq $t2, $t3, atk_dir_dois
+    la $a0, prince_attack_sword_left
+    li $a3, 65
+    li $t0, 32
+    lw $a1, prince_x
+    addiu $a1, $a1, -56
+    lw $a2, prince_y
+    jal renderizar_sprite
+    j depois_render_dois
+atk_dir_dois:
+    la $a0, prince_attack_sword_right
+    li $a3, 65
+    li $t0, 32
+    lw $a1, prince_x
+    lw $a2, prince_y
+    jal renderizar_sprite
+    j depois_render_dois
 
 pos_principe_dois:
     lw $a1, prince_x
     lw $a2, prince_y
 
     jal renderizar_sprite
+
+depois_render_dois:
 
     # --------------------------------------------------------
     # Atualiza posição anterior do Príncipe
@@ -307,6 +375,9 @@ pos_principe_dois:
     # ============================================================
     # LÓGICA DO INIMIGO AUTÔNOMO
     # ============================================================
+
+    lw $t0, inimigo_vivo
+    beqz $t0, skip_inimigo
 
     # 1. Restaura apenas a área antiga do inimigo (Dirty Rectangle)
     la $a0, cenario_2
@@ -327,9 +398,7 @@ pos_principe_dois:
     li $t0, 50
     jal renderizar_sprite
 
-    # ============================================================
-    # FIM DA LÓGICA DO INIMIGO
-    # ============================================================
+skip_inimigo:
 
     # Delay do game loop
     li $a0, 15
