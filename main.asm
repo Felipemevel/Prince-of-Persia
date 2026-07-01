@@ -14,6 +14,10 @@
 .include "cenarios/stage1.asm"
 # Cenario do Stage 2: 512x256 pixels
 .include "cenarios/stage2.asm"
+# Tela de Game Over
+.include "cenarios/gameover.asm"
+# Tela de You Win
+.include "cenarios/youwin.asm"
 # Mapa de tiles do Stage 1: 32 colunas x 16 linhas (0=ar, 1=piso, 2=perigo)
 .include "tiles/stage1.asm"
 # Mapa de tiles do Stage 2

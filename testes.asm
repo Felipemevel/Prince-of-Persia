@@ -10,6 +10,8 @@
 .include "cenarios/stage0.asm"
 .include "cenarios/stage2.asm"
 .include "cenarios/stage1.asm"
+.include "cenarios/gameover.asm"
+.include "cenarios/youwin.asm"
 .include "cenarios/alunos_transparente.asm"
 .text
 .globl main

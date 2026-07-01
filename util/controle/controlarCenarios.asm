@@ -408,7 +408,7 @@ depois_inimigo:
 
 # ===========================================================================
 # morte_personagem: trata a morte do principe
-# Reseta posicao, status e volta para o menu (cenario 0)
+# Reseta posicao, status e vai para a tela de game over (cenario 3)
 # ===========================================================================
 morte_personagem:
     addiu $sp, $sp, -4
@@ -426,7 +426,7 @@ morte_personagem:
     sw $t3, no_chao
     sw $zero, atacando
     sw $zero, ataque_cooldown
-    j vai_para_cenario_0
+    j vai_para_cenario_gameover
 
 # ===========================================================================
 # verifica_limites: verifica os limites horizontais da tela
@@ -461,7 +461,7 @@ transicao_direita:
 
 # -----------------------------------------------------------------------
 # completou_fase: o jogador completou a fase com sucesso
-# Toca som de vitoria e retorna ao menu
+# Toca som de vitoria e vai para a tela de you win (cenario 4)
 # -----------------------------------------------------------------------
 completou_fase:
     addiu $sp, $sp, -4
@@ -469,7 +469,7 @@ completou_fase:
     jal play_som_fase_completa
     lw $ra, 0($sp)
     addiu $sp, $sp, 4
-    j vai_para_cenario_0
+    j vai_para_cenario_youwin
 
 # -----------------------------------------------------------------------
 # vai_para_cenario_2: configura o estado para o cenario 2 (fase 2)
@@ -512,6 +512,26 @@ vai_para_cenario_0:
     j redirecionar_cenario
 
 # -----------------------------------------------------------------------
+# vai_para_cenario_gameover: vai para a tela de game over (cenario 3)
+# -----------------------------------------------------------------------
+vai_para_cenario_gameover:
+    li $t0, 3
+    sw $t0, cenario_atual
+    li $t0, 1
+    sw $t0, atualizar_fundo
+    j redirecionar_cenario
+
+# -----------------------------------------------------------------------
+# vai_para_cenario_youwin: vai para a tela de you win (cenario 4)
+# -----------------------------------------------------------------------
+vai_para_cenario_youwin:
+    li $t0, 4
+    sw $t0, cenario_atual
+    li $t0, 1
+    sw $t0, atualizar_fundo
+    j redirecionar_cenario
+
+# -----------------------------------------------------------------------
 # reset_jogo: reseta o estado do jogo para o cenario 1 (tecla R)
 # Reinicia posicao, vida do inimigo e status do personagem
 # -----------------------------------------------------------------------
@@ -538,7 +558,8 @@ reset_jogo:
 
 # ===========================================================================
 # redirecionar_cenario: despacha para a funcao de renderizacao
-# adequada com base no cenario_atual (0=menu, 1=fase1, 2=fase2)
+# adequada com base no cenario_atual (0=menu, 1=fase1, 2=fase2,
+# 3=gameover, 4=youwin)
 # ===========================================================================
 redirecionar_cenario:
     lw $t0, cenario_atual
@@ -546,6 +567,10 @@ redirecionar_cenario:
     beq $t0, $t1, renderizarCenarioUm
     li $t1, 2
     beq $t0, $t1, renderizarCenarioDois
+    li $t1, 3
+    beq $t0, $t1, renderizarCenarioGameOver
+    li $t1, 4
+    beq $t0, $t1, renderizarCenarioYouWin
     j renderizarCenarioZero
 fim_jogo:
     li $v0, 10

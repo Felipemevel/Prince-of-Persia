@@ -251,3 +251,37 @@ renderizarCenarioZero:
     lw $a2, menu_principal_height
     jal render_cenario
     j controlesCenario
+
+# ===========================================================================
+# renderizarCenarioGameOver: renderiza a tela de game over e aguarda
+# o jogador pressionar R para reiniciar o jogo
+# ===========================================================================
+renderizarCenarioGameOver:
+    la $a0, gameover
+    lw $a1, gameover_width
+    lw $a2, gameover_height
+    jal render_cenario
+gameover_loop:
+    jal acionarCaracter
+    li $t0, 114
+    beq $v0, $t0, reset_jogo
+    li $a0, 15
+    jal espera
+    j gameover_loop
+
+# ===========================================================================
+# renderizarCenarioYouWin: renderiza a tela de vitoria e aguarda
+# o jogador pressionar R para reiniciar o jogo
+# ===========================================================================
+renderizarCenarioYouWin:
+    la $a0, youwin
+    lw $a1, youwin_width
+    lw $a2, youwin_height
+    jal render_cenario
+youwin_loop:
+    jal acionarCaracter
+    li $t0, 114
+    beq $v0, $t0, reset_jogo
+    li $a0, 15
+    jal espera
+    j youwin_loop
